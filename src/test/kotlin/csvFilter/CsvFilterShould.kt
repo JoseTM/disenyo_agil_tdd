@@ -96,5 +96,15 @@ class CsvFilterShould {
         assertThat(result).isEmpty()
     }
 
+    @Test
+    fun exclude_lines_with_same_number_facture_as_number_facture_must_be_unique(){
+        val invoiceLine = "1,02/05/2019,1000,1080,,8,ACER Laptop,B76430134,78561783Q"
+        val invoiceLine2 = "2,02/05/2019,1000,1080,,8,ACER Laptop,,78561783Q"
+        val invoiceLine3 = "1,02/05/2019,1000,1080,,8,ACER Laptop,B76430134,"
+        val invoiceLine4 = "3,02/05/2019,1000,1080,,8,ACER Laptop,B76430134,"
+        val invoiceLine5 = "1,02/05/2019,1000,1080,,8,ACER Laptop,B76430134,"
+        val result = CsvFilter().filter(listOf(headerLine,invoiceLine, invoiceLine2, invoiceLine3, invoiceLine4, invoiceLine5))
+        assertThat(result).isEqualTo(listOf(headerLine,invoiceLine2, invoiceLine4))
+    }
 
 }

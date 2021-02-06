@@ -3,6 +3,7 @@ package csvFilter
 import java.math.BigDecimal
 
 class CsvFilter {
+    private val codFieldIndex = 0
     private val ivaFieldIndex = 4
     private val igicFieldIndex = 5
     private val netoFieldIndex = 3
@@ -15,21 +16,39 @@ class CsvFilter {
             return listOf()
         }
 
+        val duplicadosList = mutableListOf<String>()
+
+        lines.forEach{
+            duplicadosList.add(it.split(',')[codFieldIndex])
+        }
+
+        val linesSinDuplicados = mutableListOf<String>()
+        lines.forEach{
+            val codigoFactura = it.split(',')[codFieldIndex]
+            if (duplicadosList.count{ it == codigoFactura } == 1 ){
+                linesSinDuplicados.add(it)
+            }
+        }
+
         val result = mutableListOf<String>()
         result.add(lines[0])
-        val invoiceLine = lines[1]
-        val fields = invoiceLine.split(',')
+        linesSinDuplicados.forEach{
 
-        val regexDecimal = "\\D+".toRegex()
+            val invoiceLine = it
 
-        val isImpuestosCorrectos = (fields[ivaFieldIndex].isNullOrEmpty() xor fields[igicFieldIndex].isNullOrEmpty()) &&
-                (!(fields[ivaFieldIndex].contains(regexDecimal)) && !(fields[igicFieldIndex].contains(regexDecimal)))
-        val isTotalesCorrectos = (!fields[netoFieldIndex].isNullOrEmpty() && !fields[brutoFieldIndex].isNullOrEmpty()) &&
-                (!(fields[netoFieldIndex].contains(regexDecimal)) && !(fields[brutoFieldIndex].contains(regexDecimal)))
-        val isCifNifCorrecto = (fields[cifFieldIndex].isNullOrEmpty() xor fields[nifFieldIndex].isNullOrEmpty())
+            val fields = invoiceLine.split(',')
 
-        if (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && calculateNetoCorrecto(fields)) {
-            result.add(lines[1])
+            val regexDecimal = "\\D+".toRegex()
+
+            val isImpuestosCorrectos = (fields[ivaFieldIndex].isNullOrEmpty() xor fields[igicFieldIndex].isNullOrEmpty()) &&
+                    (!(fields[ivaFieldIndex].contains(regexDecimal)) && !(fields[igicFieldIndex].contains(regexDecimal)))
+            val isTotalesCorrectos = (!fields[netoFieldIndex].isNullOrEmpty() && !fields[brutoFieldIndex].isNullOrEmpty()) &&
+                    (!(fields[netoFieldIndex].contains(regexDecimal)) && !(fields[brutoFieldIndex].contains(regexDecimal)))
+            val isCifNifCorrecto = (fields[cifFieldIndex].isNullOrEmpty() xor fields[nifFieldIndex].isNullOrEmpty())
+
+            if (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && calculateNetoCorrecto(fields)) {
+                result.add(it)
+            }
         }
 
         return result.toList()
