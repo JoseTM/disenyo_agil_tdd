@@ -22,16 +22,16 @@ class CsvFilter {
         lines.forEach{  numeroFacturaList.add(it.split(',')[codFieldIndex])  }
 
         val lineasSinDuplicados = mutableListOf<String>()
-        lines.forEach {  if (notDuplicado(it, numeroFacturaList)) lineasSinDuplicados.add(it)   }
+        lines.forEach {  if (notDuplicated(it, numeroFacturaList)) lineasSinDuplicados.add(it)   }
 
         val result = mutableListOf<String>()
         result.add(lines[headerLineIndex])
-        lineasSinDuplicados.forEach { if (isLineaValida(it)) result.add(it) }
+        lineasSinDuplicados.forEach { if (isLineValid(it)) result.add(it) }
 
         return result.toList()
     }
 
-    private fun isLineaValida(invoiceLine: String):Boolean {
+    private fun isLineValid(invoiceLine: String):Boolean {
 
 
         val fields = invoiceLine.split(',')
@@ -50,11 +50,11 @@ class CsvFilter {
                     )))
         val isCifNifCorrecto = (fields[cifFieldIndex].isEmpty() xor fields[nifFieldIndex].isEmpty())
 
-        return (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && isNetoCorrecto(fields))
+        return (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && isNetoCorrect(fields))
 
     }
 
-    private fun isNetoCorrecto(fields: List<String> ):Boolean {
+    private fun isNetoCorrect(fields: List<String> ):Boolean {
         val impuesto = if (fields[ivaFieldIndex].isEmpty()) fields[igicFieldIndex].toBigDecimal()
         else fields[ivaFieldIndex].toBigDecimal()
         val neto = fields[netoFieldIndex].toBigDecimal().setScale(2)
@@ -63,7 +63,7 @@ class CsvFilter {
         return  neto.equals(netoCorrecto)
     }
 
-    private fun notDuplicado(it: String, duplicadosList: MutableList<String> ):Boolean {
+    private fun notDuplicated(it: String, duplicadosList: MutableList<String> ):Boolean {
         val codigoFactura = it.split(',')[codFieldIndex]
         return (duplicadosList.count { it == codigoFactura } == 1)
     }
