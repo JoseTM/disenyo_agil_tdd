@@ -3,6 +3,7 @@ package csvFilter
 import java.math.BigDecimal
 
 class CsvFilter {
+    private val headerLineIndex = 0
     private val codFieldIndex = 0
     private val ivaFieldIndex = 4
     private val igicFieldIndex = 5
@@ -25,8 +26,15 @@ class CsvFilter {
         val linesSinDuplicados = listaSinDuplicados(lines, duplicadosList)
 
         val result = mutableListOf<String>()
-        result.add(lines[0])
-        linesSinDuplicados.forEach{
+        result.add(lines[headerLineIndex])
+        result.addAll(calcularResultado(linesSinDuplicados))
+
+        return result.toList()
+    }
+
+    private fun calcularResultado( linesSinDuplicados: List<String> ):List<String> {
+        val result = mutableListOf<String>()
+        linesSinDuplicados.forEach {
 
             val invoiceLine = it
 
@@ -34,17 +42,22 @@ class CsvFilter {
 
             val regexDecimal = "\\D+".toRegex()
 
-            val isImpuestosCorrectos = (fields[ivaFieldIndex].isNullOrEmpty() xor fields[igicFieldIndex].isNullOrEmpty()) &&
-                    (!(fields[ivaFieldIndex].contains(regexDecimal)) && !(fields[igicFieldIndex].contains(regexDecimal)))
-            val isTotalesCorrectos = (!fields[netoFieldIndex].isNullOrEmpty() && !fields[brutoFieldIndex].isNullOrEmpty()) &&
-                    (!(fields[netoFieldIndex].contains(regexDecimal)) && !(fields[brutoFieldIndex].contains(regexDecimal)))
+            val isImpuestosCorrectos =
+                (fields[ivaFieldIndex].isNullOrEmpty() xor fields[igicFieldIndex].isNullOrEmpty()) &&
+                        (!(fields[ivaFieldIndex].contains(regexDecimal)) && !(fields[igicFieldIndex].contains(
+                            regexDecimal
+                        )))
+            val isTotalesCorrectos =
+                (!fields[netoFieldIndex].isNullOrEmpty() && !fields[brutoFieldIndex].isNullOrEmpty()) &&
+                        (!(fields[netoFieldIndex].contains(regexDecimal)) && !(fields[brutoFieldIndex].contains(
+                            regexDecimal
+                        )))
             val isCifNifCorrecto = (fields[cifFieldIndex].isNullOrEmpty() xor fields[nifFieldIndex].isNullOrEmpty())
 
             if (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && calculateNetoCorrecto(fields)) {
                 result.add(it)
             }
         }
-
         return result.toList()
     }
 
