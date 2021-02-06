@@ -22,13 +22,7 @@ class CsvFilter {
             duplicadosList.add(it.split(',')[codFieldIndex])
         }
 
-        val linesSinDuplicados = mutableListOf<String>()
-        lines.forEach{
-            val codigoFactura = it.split(',')[codFieldIndex]
-            if (duplicadosList.count{ it == codigoFactura } == 1 ){
-                linesSinDuplicados.add(it)
-            }
-        }
+        val linesSinDuplicados = listaSinDuplicados(lines, duplicadosList)
 
         val result = mutableListOf<String>()
         result.add(lines[0])
@@ -52,6 +46,17 @@ class CsvFilter {
         }
 
         return result.toList()
+    }
+
+    private fun listaSinDuplicados(lines: List<String>, duplicadosList: MutableList<String> ):List<String> {
+        val linesSinDuplicados = mutableListOf<String>()
+        lines.forEach {
+            val codigoFactura = it.split(',')[codFieldIndex]
+            if (duplicadosList.count { it == codigoFactura } == 1) {
+                linesSinDuplicados.add(it)
+            }
+        }
+    return linesSinDuplicados.toList()
     }
 
     private fun calculateNetoCorrecto(fields: List<String> ):Boolean {
