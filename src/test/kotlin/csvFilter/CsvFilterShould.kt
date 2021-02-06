@@ -24,72 +24,74 @@ class CsvFilterShould {
 
     @Test
     fun exclude_lines_with_both_tax_fields_populated_as_they_are_exclusive(){
-        val invoiceLine = "1,02/05/2019,1000,810,19,8,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(ivaTax = "19")
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_both_tax_fields_empty_as_one_is_required(){
-        val invoiceLine = "1,02/05/2019,1000,810,,,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(igicTax = emptyField)
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_iva_tax_field_filled_with_alphabetic_as_number_is_required(){
-        val invoiceLine = "1,02/05/2019,1000,810,2B3c,,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+
+        val lines = fileWithOneInvoiceLineHaving(igicTax = emptyField, ivaTax = "2B3c")
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_igic_tax_field_filled_with_alphabetic_as_number_is_required(){
-        val invoiceLine = "1,02/05/2019,1000,810,,3ñ4,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+
+        val lines = fileWithOneInvoiceLineHaving(igicTax = "3ñ4", ivaTax = emptyField)
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_both_tax_fields_populated_even_if_non_decimal(){
-        val invoiceLine = "1,02/05/2019,,,XYZ,12,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(igicTax = "12", ivaTax = "XYZ")
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_neto_or_bruto_empty_as_both_are_required(){
-        val invoiceLine = "1,02/05/2019,1000,,,8,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(gross = emptyField, neto = emptyField)
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_alphabetic_characters_in_neto_as_number_is_required(){
-        val invoiceLine = "1,02/05/2019,1000,8ñ10,,8,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(gross = "1000", neto = "8ñ10")
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_alphabetic_characters_in_bruto_as_number_is_required(){
-        val invoiceLine = "1,02/05/2019,10ñ00,810,,8,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(gross = "10ñ00", neto = "1080")
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_neto_misscalculated(){
-        val invoiceLine = "1,02/05/2019,1000,810,,8,ACER Laptop,B76430134,"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(gross = "10ñ00", neto = "810")
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
     fun exclude_lines_with_cif_and_nif_filled_as_just_one_is_required(){
-        val invoiceLine = "1,02/05/2019,1000,1080,,8,ACER Laptop,B76430134,84988292A"
-        val result = filter.filter(listOf(headerLine, invoiceLine))
-        assertThat(result).isEqualTo(listOf(headerLine))
+        val lines = fileWithOneInvoiceLineHaving(numCIF = "B76430134", numNIF = "84988292A")
+        val result = filter.filter(lines)
+        assertThat(result).isEqualTo(emptyDataFile)
     }
 
     @Test
@@ -118,25 +120,17 @@ class CsvFilterShould {
         assertThat(result).isEqualTo(listOf(headerLine,invoiceLine2, invoiceLine4))
     }
 
-    private fun fileWithOneInvoiceLineHaving(ivaTax: String = emptyField, igicTax: String = "8",
-                                             concept: String = "irrelevant"): List<String> {
+    private fun fileWithOneInvoiceLineHaving(gross:String = "1000", neto:String = "1080", ivaTax: String = emptyField,
+                                             igicTax: String = "8", concept: String = "irrelevant", numCIF:String = "B76430134",
+                                             numNIF:String = emptyField): List<String> {
 
         val invoiceId = "1"
         val invoiceDate = "02/05/2019"
-        val grossAmount = "1000"
-        val netAmount = "1080"
-        val cif = "B76430134"
-        val nif = emptyField
-        val formattedLine = listOf(
-                    invoiceId,
-                    invoiceDate,
-                    grossAmount,
-                    netAmount,
-                    ivaTax,
-                    igicTax,
-                    concept,
-                    cif,
-                    nif
+        val grossAmount = gross
+        val netAmount = neto
+        val cif = numCIF
+        val nif = numNIF
+        val formattedLine = listOf(invoiceId, invoiceDate, grossAmount, netAmount, ivaTax, igicTax, concept, cif, nif
         ).joinToString(",")
         return listOf(headerLine, formattedLine)
     }
