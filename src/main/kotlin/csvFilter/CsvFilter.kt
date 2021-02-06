@@ -26,12 +26,12 @@ class CsvFilter {
 
         val result = mutableListOf<String>()
         result.add(lines[headerLineIndex])
-        lineasSinDuplicados.forEach { if (calculaResultado(it)) result.add(it) }
+        lineasSinDuplicados.forEach { if (isLineaValida(it)) result.add(it) }
 
         return result.toList()
     }
 
-    private fun calculaResultado(invoiceLine: String):Boolean {
+    private fun isLineaValida(invoiceLine: String):Boolean {
 
 
         val fields = invoiceLine.split(',')
@@ -39,23 +39,23 @@ class CsvFilter {
         val regexDecimal = "\\D+".toRegex()
 
         val isImpuestosCorrectos =
-            (fields[ivaFieldIndex].isNullOrEmpty() xor fields[igicFieldIndex].isNullOrEmpty()) &&
+            (fields[ivaFieldIndex].isEmpty() xor fields[igicFieldIndex].isEmpty()) &&
                     (!(fields[ivaFieldIndex].contains(regexDecimal)) && !(fields[igicFieldIndex].contains(
                         regexDecimal
                     )))
         val isTotalesCorrectos =
-            (!fields[netoFieldIndex].isNullOrEmpty() && !fields[brutoFieldIndex].isNullOrEmpty()) &&
+            (!fields[netoFieldIndex].isEmpty() && !fields[brutoFieldIndex].isEmpty()) &&
                     (!(fields[netoFieldIndex].contains(regexDecimal)) && !(fields[brutoFieldIndex].contains(
                         regexDecimal
                     )))
-        val isCifNifCorrecto = (fields[cifFieldIndex].isNullOrEmpty() xor fields[nifFieldIndex].isNullOrEmpty())
+        val isCifNifCorrecto = (fields[cifFieldIndex].isEmpty() xor fields[nifFieldIndex].isEmpty())
 
-        return (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && calculateNetoCorrecto(fields))
+        return (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && isNetoCorrecto(fields))
 
     }
 
-    private fun calculateNetoCorrecto(fields: List<String> ):Boolean {
-        val impuesto = if (fields[ivaFieldIndex].isNullOrEmpty()) fields[igicFieldIndex].toBigDecimal()
+    private fun isNetoCorrecto(fields: List<String> ):Boolean {
+        val impuesto = if (fields[ivaFieldIndex].isEmpty()) fields[igicFieldIndex].toBigDecimal()
         else fields[ivaFieldIndex].toBigDecimal()
         val neto = fields[netoFieldIndex].toBigDecimal().setScale(2)
         val bruto = fields[brutoFieldIndex].toBigDecimal()
