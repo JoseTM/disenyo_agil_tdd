@@ -12,7 +12,7 @@ class CsvFilter {
     private val cifFieldIndex = 7
     private val nifFieldIndex = 8
 
-    fun filter (lines: List<String>) : List<String> {
+    fun apply (lines: List<String>) : List<String> {
         if (lines.size < 2){
             return listOf()
         }
