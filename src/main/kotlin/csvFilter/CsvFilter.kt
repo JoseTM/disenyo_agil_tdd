@@ -17,59 +17,41 @@ class CsvFilter {
             return listOf()
         }
 
-        val duplicadosList = mutableListOf<String>()
+        val numeroFacturaList = mutableListOf<String>()
 
-        lines.forEach{
-            duplicadosList.add(it.split(',')[codFieldIndex])
-        }
+        lines.forEach{  numeroFacturaList.add(it.split(',')[codFieldIndex])  }
 
-        val linesSinDuplicados = listaSinDuplicados(lines, duplicadosList)
+        val lineasSinDuplicados = mutableListOf<String>()
+        lines.forEach {  if (notDuplicado(it, numeroFacturaList)) lineasSinDuplicados.add(it)   }
 
         val result = mutableListOf<String>()
         result.add(lines[headerLineIndex])
-        result.addAll(calcularResultado(linesSinDuplicados))
+        lineasSinDuplicados.forEach { if (calculaResultado(it)) result.add(it) }
 
         return result.toList()
     }
 
-    private fun calcularResultado( linesSinDuplicados: List<String> ):List<String> {
-        val result = mutableListOf<String>()
-        linesSinDuplicados.forEach {
+    private fun calculaResultado(invoiceLine: String):Boolean {
 
-            val invoiceLine = it
 
-            val fields = invoiceLine.split(',')
+        val fields = invoiceLine.split(',')
 
-            val regexDecimal = "\\D+".toRegex()
+        val regexDecimal = "\\D+".toRegex()
 
-            val isImpuestosCorrectos =
-                (fields[ivaFieldIndex].isNullOrEmpty() xor fields[igicFieldIndex].isNullOrEmpty()) &&
-                        (!(fields[ivaFieldIndex].contains(regexDecimal)) && !(fields[igicFieldIndex].contains(
-                            regexDecimal
-                        )))
-            val isTotalesCorrectos =
-                (!fields[netoFieldIndex].isNullOrEmpty() && !fields[brutoFieldIndex].isNullOrEmpty()) &&
-                        (!(fields[netoFieldIndex].contains(regexDecimal)) && !(fields[brutoFieldIndex].contains(
-                            regexDecimal
-                        )))
-            val isCifNifCorrecto = (fields[cifFieldIndex].isNullOrEmpty() xor fields[nifFieldIndex].isNullOrEmpty())
+        val isImpuestosCorrectos =
+            (fields[ivaFieldIndex].isNullOrEmpty() xor fields[igicFieldIndex].isNullOrEmpty()) &&
+                    (!(fields[ivaFieldIndex].contains(regexDecimal)) && !(fields[igicFieldIndex].contains(
+                        regexDecimal
+                    )))
+        val isTotalesCorrectos =
+            (!fields[netoFieldIndex].isNullOrEmpty() && !fields[brutoFieldIndex].isNullOrEmpty()) &&
+                    (!(fields[netoFieldIndex].contains(regexDecimal)) && !(fields[brutoFieldIndex].contains(
+                        regexDecimal
+                    )))
+        val isCifNifCorrecto = (fields[cifFieldIndex].isNullOrEmpty() xor fields[nifFieldIndex].isNullOrEmpty())
 
-            if (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && calculateNetoCorrecto(fields)) {
-                result.add(it)
-            }
-        }
-        return result.toList()
-    }
+        return (isCifNifCorrecto && isImpuestosCorrectos && isTotalesCorrectos && calculateNetoCorrecto(fields))
 
-    private fun listaSinDuplicados(lines: List<String>, duplicadosList: MutableList<String> ):List<String> {
-        val linesSinDuplicados = mutableListOf<String>()
-        lines.forEach {
-            val codigoFactura = it.split(',')[codFieldIndex]
-            if (duplicadosList.count { it == codigoFactura } == 1) {
-                linesSinDuplicados.add(it)
-            }
-        }
-    return linesSinDuplicados.toList()
     }
 
     private fun calculateNetoCorrecto(fields: List<String> ):Boolean {
@@ -80,4 +62,11 @@ class CsvFilter {
         val netoCorrecto = bruto.multiply(impuesto.divide(BigDecimal.valueOf(100))) + bruto
         return  neto.equals(netoCorrecto)
     }
+
+    private fun notDuplicado(it: String, duplicadosList: MutableList<String> ):Boolean {
+        val codigoFactura = it.split(',')[codFieldIndex]
+        return (duplicadosList.count { it == codigoFactura } == 1)
+    }
+
+
 }

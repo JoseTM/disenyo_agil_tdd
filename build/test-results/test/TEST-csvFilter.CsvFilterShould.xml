@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="csvFilter.CsvFilterShould" tests="14" skipped="0" failures="0" errors="0" timestamp="2021-02-06T09:47:58" hostname="Tiburon" time="0.061">
+<testsuite name="csvFilter.CsvFilterShould" tests="14" skipped="0" failures="0" errors="0" timestamp="2021-02-06T11:06:10" hostname="Tiburon" time="0.058">
   <properties/>
-  <testcase name="exclude_lines_with_both_tax_fields_empty_as_one_is_required" classname="csvFilter.CsvFilterShould" time="0.054"/>
-  <testcase name="exclude_lines_with_igic_tax_field_filled_with_alphabetic_as_number_is_required" classname="csvFilter.CsvFilterShould" time="0.001"/>
-  <testcase name="exclude_lines_with_alphabetic_characters_in_bruto_as_number_is_required" classname="csvFilter.CsvFilterShould" time="0.0"/>
+  <testcase name="exclude_lines_with_both_tax_fields_empty_as_one_is_required" classname="csvFilter.CsvFilterShould" time="0.05"/>
+  <testcase name="exclude_lines_with_igic_tax_field_filled_with_alphabetic_as_number_is_required" classname="csvFilter.CsvFilterShould" time="0.0"/>
+  <testcase name="exclude_lines_with_alphabetic_characters_in_bruto_as_number_is_required" classname="csvFilter.CsvFilterShould" time="0.001"/>
   <testcase name="exclude_lines_with_iva_tax_field_filled_with_alphabetic_as_number_is_required" classname="csvFilter.CsvFilterShould" time="0.0"/>
-  <testcase name="empty_file_produce_empty_return" classname="csvFilter.CsvFilterShould" time="0.0"/>
-  <testcase name="exclude_lines_with_both_tax_fields_populated_even_if_non_decimal" classname="csvFilter.CsvFilterShould" time="0.001"/>
+  <testcase name="empty_file_produce_empty_return" classname="csvFilter.CsvFilterShould" time="0.001"/>
+  <testcase name="exclude_lines_with_both_tax_fields_populated_even_if_non_decimal" classname="csvFilter.CsvFilterShould" time="0.0"/>
   <testcase name="exclude_lines_with_neto_or_bruto_empty_as_both_are_required" classname="csvFilter.CsvFilterShould" time="0.0"/>
-  <testcase name="exclude_lines_with_cif_and_nif_filled_as_just_one_is_required" classname="csvFilter.CsvFilterShould" time="0.001"/>
+  <testcase name="exclude_lines_with_cif_and_nif_filled_as_just_one_is_required" classname="csvFilter.CsvFilterShould" time="0.0"/>
   <testcase name="exclude_lines_with_alphabetic_characters_in_neto_as_number_is_required" classname="csvFilter.CsvFilterShould" time="0.0"/>
-  <testcase name="exclude_lines_with_same_number_facture_as_number_facture_must_be_unique" classname="csvFilter.CsvFilterShould" time="0.002"/>
-  <testcase name="exclude_lines_with_neto_misscalculated" classname="csvFilter.CsvFilterShould" time="0.0"/>
-  <testcase name="exclude_lines_with_both_tax_fields_populated_as_they_are_exclusive" classname="csvFilter.CsvFilterShould" time="0.001"/>
+  <testcase name="exclude_lines_with_same_number_facture_as_number_facture_must_be_unique" classname="csvFilter.CsvFilterShould" time="0.001"/>
+  <testcase name="exclude_lines_with_neto_misscalculated" classname="csvFilter.CsvFilterShould" time="0.001"/>
+  <testcase name="exclude_lines_with_both_tax_fields_populated_as_they_are_exclusive" classname="csvFilter.CsvFilterShould" time="0.0"/>
   <testcase name="exclude_file_without_header" classname="csvFilter.CsvFilterShould" time="0.0"/>
-  <testcase name="allow_for_correct_lines_only" classname="csvFilter.CsvFilterShould" time="0.0"/>
+  <testcase name="allow_for_correct_lines_only" classname="csvFilter.CsvFilterShould" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
