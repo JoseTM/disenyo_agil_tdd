@@ -84,14 +84,14 @@ class CsvFilterShould {
     }
 
     @Test
-    fun exclude_file_without_header(){
+    fun exclude_files_without_header(){
         val invoiceLine = "1,02/05/2019,1000,1080,,8,ACER Laptop,B76430134,78561783Q"
         val result = CsvFilter().filter(listOf(invoiceLine))
         assertThat(result).isEmpty()
     }
 
     @Test
-    fun empty_file_produce_empty_return(){
+    fun return_empty_when_the_file_is_empty(){
         val result = CsvFilter().filter(listOf())
         assertThat(result).isEmpty()
     }
